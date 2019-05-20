@@ -1,0 +1,15 @@
+# Test for Docker Cloud Automated Build
+sut:
+  build: .
+  # Mount test file
+  volumes:
+    - ./run-test_docker-cloud.sh:/app/run-test.sh
+  environment:
+    # Use Host Env
+    - MSTDN_ACCESSTOKEN
+    # Define Envs for testing. Set debug mode to true and over-write toot template
+    - IS_MODE_DEBUG=true
+    - MSTDN_TOOT_MAIN=This is a sample toot from the test script in Docker Cloud's automated build.
+    - MSTDN_TOOT_SPOILER=%%DATE_TIME%% Automated build has run.
+  # Run the mounted test file inside a container from the built image
+  entrypoint: /app/run-test.sh
