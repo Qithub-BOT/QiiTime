@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  qiitime:
+    container_name: qiitime
+    build: .
+    image: qiitime
+    volumes:
+      - ./data/:/data/
+    env_file: mastodon.env

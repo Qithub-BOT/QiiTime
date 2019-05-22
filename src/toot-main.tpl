@@ -1,0 +1,1 @@
+%%ICON_HOUR%% %%DATE_HOUR24%% 時をお知らせします :qiitan: (%%DATE_TODAY%%)
