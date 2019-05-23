@@ -2,9 +2,6 @@ sut:
   container_name: qiitime
   build: .
   # run test file inside a container using the built image
-  entrypoint:
-    - apk update
-    - apk add curl
-    - /app/toot-clock.php
-    - /app/run-server.sh
-    - curl http://qiitime/
+  volumes:
+    - ./run-test.sh:/app/run-test.sh
+  entrypoint: /app/run-test.sh
