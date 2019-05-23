@@ -1,5 +1,4 @@
 sut:
-  container_name: qiitime
   build: .
   # run test file inside a container using the built image
   volumes:
