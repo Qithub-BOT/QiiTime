@@ -6,5 +6,7 @@ services:
     build: .
     image: qiitime
     volumes:
+      # Uncomment below to edit script realtime
+      #- ./src/:/app/
       - ./data/:/data/
     env_file: mastodon.env

@@ -7,27 +7,35 @@
  */
 define('TIME_NOW', time());
 
+// ユーザー設定による定数のデフォルト値
+const MSTDN_SCHEMA     = 'https';
+const MSTDN_HOST       = 'qiitadon.com';
+const MSTDN_VISIBILITY = 'direct';
+
+// フラグ・その他定数
 const SUCCESS = 0; // 成功時の終了ステータス
 const FAILURE = 1; // 失敗時の終了ステータス
 const DO_EXIT     = true;
 const DO_NOT_EXIT = false;
+const DO_NOT_ECHO = true; // print_r 時のフラグ
 const PATH_DIR_DATA    = '/data';
 const NAME_FILE_DATA   = 'tooted.json';
+const NAME_FILE_LOG    = 'log.txt';
 const COUNT_RETRY_MAX  = 2;  //トゥート失敗時のリトライ数
 const SECS_SLEEP_RETRY = 1;  //リトライ時のインターバル秒
 const LEN_ACCESSTOKEN  = 64; //アクセストークンの長さ
 
-// ユーザー設定のデフォルト
-const MSTDN_SCHEMA     = 'https';
-const MSTDN_HOST       = 'qiitadon.com';
-const MSTDN_VISIBILITY = 'private';
+// 作業ディレクトリをスクリプトに移動
+if (false === chdir(dirname(__FILE__))) {
+    print_error('* Fail to change working directory to the script directory.', DO_EXIT);
+}
 
 // デバッグモードの確認用表示
 print_on_debug('- Working on DEBUG Mode');
 
 // 必須の環境変数がセットされているか確認
 if (! is_env_set()) {
-    print_error('Must environment variables missing.', DO_EXIT);
+    print_error('* Must environment variables missing.', DO_EXIT);
 }
 
 // 同一時間内の重複リクエスト防止
@@ -36,7 +44,7 @@ if (is_threshold_same_as_cache()) {
     if (is_mode_debug()) {
         $json_cached = PHP_EOL . '- Cached JSON:' . PHP_EOL . get_data_cached();
     }
-    print_error('* Already tooted' . $json_cached, DO_NOT_EXIT);
+    print_error('* Already tooted' . $json_cached, DO_EXIT);
 }
 
 /**
@@ -74,7 +82,7 @@ $name_useragent   = 'QiiTime-Dev';
 $header = [
     'Content-Type: application/x-www-form-urlencoded',
     "Authorization: Bearer ${access_token}",
-    "Idempotency-Key: ${hash_idempotency}",
+//    "Idempotency-Key: ${hash_idempotency}",
     "User-Agent: {$name_useragent}",
 ];
 $header = implode("\r\n", $header);
@@ -113,7 +121,7 @@ while (true) {
         }
     }
     // トゥート失敗時の処理
-    echo "* Toot failed. Retry ${count_retry}/" . COUNT_RETRY_MAX . PHP_EOL;
+    print_error("* Toot failed. Retry ${count_retry}/" . COUNT_RETRY_MAX);
     print_on_debug('- Server response:');
     print_on_debug($result);
     sleep(SECS_SLEEP_RETRY * $count_retry);
@@ -122,10 +130,11 @@ while (true) {
 
 /* Save Results */
 if (! save_data($result)) {
-    echo '* Failed to save tooted data.';
+    print_error('* Failed to save tooted data.');
 }
 
-echo file_get_contents('/data/tooted.json');
+print_stdout('- Toot success.');
+print_stdout(file_get_contents('/data/tooted.json'));
 exit(SUCCESS);
 
 /* [Functions] ============================================================= */
@@ -168,6 +177,7 @@ function get_envs($key=null)
     foreach ($envs as $key => $value) {
         $result[$key] = trim($value, '\'"');
     }
+
     return $result;
 }
 
@@ -178,26 +188,43 @@ function get_host()
 
 function get_icon_hour()
 {
-    $date_hour12  = (integer) date('h', TIME_NOW);
-    $icon_hour = strtr($date_hour12, [
+    $date_hour12 = (integer) date('h', TIME_NOW);
+    $icon_hour   = strtr($date_hour12, [
         12 => '🕛', 11 => '🕚', 10 => '🕙', 9 => '🕘',
         8  => '🕗',  7 => '🕖',  6 => '🕕', 5 => '🕔',
         4  => '🕓',  3 => '🕒',  2 => '🕑', 1 => '🕐',
         0  => '🕛',
     ]);
+
     return $icon_hour;
+}
+
+function get_path_dir_data()
+{
+    $path_dir_data = realpath(PATH_DIR_DATA);
+
+    if (empty($path_dir_data)) {
+        print_error('* Directory path for Data not set.', DO_EXIT);
+    }
+    if (! is_dir($path_dir_data)) {
+        print_error('* Data directory missing. Mount or create a directory at:' . $path_dir_data, DO_EXIT);
+    }
+
+    return $path_dir_data;
 }
 
 function get_path_file_data()
 {
-    if (empty(PATH_DIR_DATA)) {
-        print_error('* Directory path for Data not set.', DO_EXIT);
-    }
-    if (! is_dir(PATH_DIR_DATA) && ! file_exists(PATH_DIR_DATA)) {
-        print_error('* Data directory missing. Mount or create a directory:' . PATH_DIR_DATA, DO_EXIT);
-    }
+    $path_file_data = get_path_dir_data();
 
-    return PATH_DIR_DATA . DIRECTORY_SEPARATOR . NAME_FILE_DATA;
+    return $path_file_data . DIRECTORY_SEPARATOR . NAME_FILE_DATA;
+}
+
+function get_path_file_log()
+{
+    $path_file_data = get_path_dir_data();
+
+    return $path_file_data . DIRECTORY_SEPARATOR . NAME_FILE_LOG;
 }
 
 function get_schema()
@@ -220,6 +247,7 @@ function get_url_toot()
     $schema  = get_schema();
     $host    = get_host();
     $endpint = '/api/v1/statuses';
+
     return "${schema}://${host}${endpint}";
 }
 
@@ -230,13 +258,17 @@ function get_value($key, $array, $default=null)
 
 function get_visibility()
 {
-    return 'direct';
+    if (is_mode_debug()) {
+        return 'direct';
+    }
+
     return get_envs('MSTDN_VISIBILITY') ?: MSTDN_VISIBILITY;
 }
 
 function is_empty($key, $array)
 {
     $value = get_value($key, $array, '');
+
     if (empty($value)) {
         return true;
     }
@@ -249,21 +281,21 @@ function is_env_set()
     $result = true;
 
     if (is_empty('MSTDN_ACCESSTOKEN', $envs)) {
-        echo '* Env variable missing: MSTDN_ACCESSTOKEN' . PHP_EOL;
+        print_error('* Env variable missing: MSTDN_ACCESSTOKEN');
         $result = false;
     }
 
     if (! is_valid_format_token(get_value('MSTDN_ACCESSTOKEN', $envs))) {
-        echo '* Invalid format in variable: MSTDN_ACCESSTOKEN' . PHP_EOL;
+        print_error('* Invalid format in variable: MSTDN_ACCESSTOKEN');
         $result = false;
     }
 
 //    if(is_empty('MSTDN_SCHEMA', $envs)){
-//        echo '* Env variable missing: MSTDN_SCHEMA' . PHP_EOL;
+//        print_error('* Env variable missing: MSTDN_SCHEMA');
 //        $result = false;
 //    }
 //    if(is_empty('MSTDN_HOST', $envs)){
-//        echo '* Env variable missing: MSTDN_HOST' . PHP_EOL;
+//        print_error('* Env variable missing: MSTDN_HOST');
 //        $result = false;
 //    }
 
@@ -272,8 +304,16 @@ function is_env_set()
 
 function is_mode_debug()
 {
+    static $is_mode_debug;
+
+    if (isset($is_mode_debug)) {
+        return $is_mode_debug;
+    }
+
     $value = get_envs('IS_MODE_DEBUG') ?: 'false';
-    return ('false' !== strtolower($value));
+    $is_mode_debug = ('false' !== strtolower($value));
+
+    return $is_mode_debug;
 }
 
 function is_threshold_same_as_cache()
@@ -297,6 +337,16 @@ function is_valid_format_token($string)
     return (ctype_alnum($string) && (LEN_ACCESSTOKEN === strlen($string)));
 }
 
+function log_to_file($string)
+{
+    $string        = trim($string) . PHP_EOL;
+    $path_file_log = get_path_file_log();
+    $timestamp     = date('Y-m-d H:i:s', time());
+    $log           = "${timestamp} ${string}";
+
+    return file_put_contents($path_file_log, $log, FILE_APPEND);
+}
+
 function print_on_debug($mix)
 {
     if (! is_mode_debug()) {
@@ -304,18 +354,33 @@ function print_on_debug($mix)
     }
 
     if (is_string($mix)) {
-        echo $mix . PHP_EOL;
+        $result = $mix . PHP_EOL;
     } else {
-        print_r($mix);
+        $result = print_r($mix, DO_NOT_ECHO);
     }
+
+    log_to_file('DEBUG: ' . $result);
+    echo $result;
 }
 
 function print_error($message, $exit_and_die=true)
 {
     fputs(STDERR, trim($message) . PHP_EOL);
+    if (is_mode_debug()) {
+        log_to_file('ERROR: ' . $message);
+    }
     if ($exit_and_die) {
         exit(FAILURE);
     }
+}
+
+function print_stdout($message)
+{
+    $message = trim($message) . PHP_EOL;
+    if (is_mode_debug()) {
+        log_to_file('LOG: ' . $message);
+    }
+    echo $message;
 }
 
 function replace_str_in_template($string, $list_to_replace)

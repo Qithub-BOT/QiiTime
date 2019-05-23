@@ -8,7 +8,8 @@ RUN apk update \
       php-json@php \
       php-ctype@php \
       php-openssl@php \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && (crontab -l ; echo "0 * * * * /app/toot-clock.php > /dev/null 2>&1 &") | crontab -
 
 COPY src/ /app/
 
