@@ -3,4 +3,7 @@ sut:
   # run test file inside a container using the built image
   volumes:
     - ./run-test.sh:/app/run-test.sh
+  environment:
+    - MSTDN_ACCESSTOKEN
+    - MSTDN_TOOT_MAIN
   entrypoint: /app/run-test.sh

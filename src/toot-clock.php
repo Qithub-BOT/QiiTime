@@ -110,7 +110,7 @@ while (true) {
     // トゥートの実行.
     // ヘッダに Idempotency-Key をセットしているので同一 Key の場合は何度トゥートしても
     // 成功した １つのトゥートのみが有効
-    $result = ＠file_get_contents($url_api_toot, false, stream_context_create($context));
+    $result = file_get_contents($url_api_toot, false, stream_context_create($context));
     // トゥート成功時の処理
     if (false !== $result) {
         $array  = json_decode($result, JSON_OBJECT_AS_ARRAY);
