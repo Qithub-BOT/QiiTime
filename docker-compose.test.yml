@@ -5,5 +5,7 @@ sut:
     - ./run-test.sh:/app/run-test.sh
   environment:
     - MSTDN_ACCESSTOKEN
-    - MSTDN_TOOT_MAIN
+    - IS_MODE_DEBUG='true'
+    - MSTDN_TOOT_MAIN='This is a sample toot'
+    - MSTDN_TOOT_SPOILER='%%DATE_TIME%%'
   entrypoint: /app/run-test.sh

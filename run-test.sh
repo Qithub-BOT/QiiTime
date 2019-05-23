@@ -11,8 +11,7 @@ name_host=$(hostname)
 name_host=${name_host:-$(cat /etc/hostname)}
 
 echo "- Host name: ${name_host}"
-echo '- Env:'
-env
+echo '- Env:'; env
 echo '- Installing curl ...'
 apk update && \
 apk add curl && \

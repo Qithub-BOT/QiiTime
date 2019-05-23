@@ -49,23 +49,21 @@ if (is_threshold_same_as_cache()) {
 
 /**
  * Build content to POST.
- * トゥート内容をテンプレートに流し込み。
  */
 
 // テンプレートの文字列置き換えの一覧読み込み
 require_once('list-replace.inc.php');
 
 // メインのトゥート部取得
-$template_main = file_get_contents('toot-main.tpl');
-$toot_main     = replace_str_in_template($template_main, $list_replace);
-
+$toot_main    = get_toot_main();
 // CW内（「もっと見る」）の内容取得
-$template_spoiler = file_get_contents('toot-spoiler.tpl');
-$toot_warning     = replace_str_in_template($template_spoiler, $list_replace);
+$toot_spoiler = get_toot_spoiler();
 
 // POST するデータの作成
+// 時報トゥートは、警告文欄に時報、隠し本文にその他の情報を記載しているので
+// 逆にセットしています。
 $data_post = [
-    'status'       => $toot_warning,
+    'status'       => $toot_spoiler,
     'spoiler_text' => $toot_main,
     'visibility'   => get_visibility(),
 ];
@@ -76,7 +74,7 @@ $data_post = http_build_query($data_post, "", "&");
  * リクエストのヘッダー作成。
  */
 $access_token     = get_accesstoken();
-$hash_idempotency = hash('sha256', $toot_main . $toot_warning);
+$hash_idempotency = hash('sha256', $toot_main . $toot_spoiler);
 $name_useragent   = 'QiiTime-Dev';
 
 $header = [
@@ -234,12 +232,27 @@ function get_schema()
 
 function get_threshold_from_time(int $timestamp)
 {
+    if(is_mode_debug()){
+        return date('YmdHi', $timestamp);
+    }
     return date('YmdH', $timestamp);
 }
 
 function get_threshold_now()
 {
     return get_threshold_from_time(TIME_NOW);
+}
+
+function get_toot_main(){
+    $template_main = get_envs('MSTDN_TOOT_MAIN') ?: file_get_contents('toot-main.tpl');
+    $list_replace  = get_list_replace();
+    return replace_str_in_template($template_main, $list_replace);
+}
+
+function get_toot_spoiler(){
+    $template_main = get_envs('MSTDN_TOOT_SPOILER') ?: file_get_contents('toot-main.tpl');
+    $list_replace  = get_list_replace();
+    return replace_str_in_template($template_main, $list_replace);
 }
 
 function get_url_toot()
