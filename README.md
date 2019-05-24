@@ -10,8 +10,8 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
 - リポジトリ
   - Docker イメージ: https://hub.docker.com/r/qithubbot/qiitime @ Docker Hub
   - GitHub ソース: https://github.com/Qithub-BOT/QiiTime @ GitHub
-- Fork した場合、Qiitadon 以外のインスタンスで使いたい場合、トゥート内容などをカスタムしたい場合やログの確認などの詳細な使い方は以下をご覧ください。
-  - USAGE_DETAIL.md
+- 詳細な使い方は以下をご覧ください。
+  - USAGE_DETAIL.md （Fork した場合、Qiitadon 以外のインスタンスで使いたい場合、トゥート内容などをカスタムしたい場合やログの確認方法など）
 
 ## Usage
 
@@ -70,4 +70,3 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
   ```bash
   docker kill qiitime
   ```
-

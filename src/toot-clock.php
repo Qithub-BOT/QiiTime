@@ -1,10 +1,14 @@
 #!/usr/bin/env php
 <?php
 /**
- * このスクリプトは呼び出されると時報をトゥートします。また、そのトゥート ID を同じ階層にある `tooted.json` に出力します.
+ * このスクリプトは呼び出されると時報をトゥートします
+ * また、そのトゥート ID を `/data/tooted.json` に出力します.
  *
  * - Note: 呼び出された時間をトゥートするので、呼び出すタイミングに注意。
  */
+
+ /* [Constants] ============================================================= */
+
 define('TIME_NOW', time());
 
 // ユーザー設定による定数のデフォルト値
@@ -24,6 +28,8 @@ const NAME_FILE_LOG    = 'log.txt';
 const COUNT_RETRY_MAX  = 2;  //トゥート失敗時のリトライ数
 const SECS_SLEEP_RETRY = 1;  //リトライ時のインターバル秒
 const LEN_ACCESSTOKEN  = 64; //アクセストークンの長さ
+
+/* [PreProcess] ============================================================ */
 
 // 作業ディレクトリをスクリプトに移動
 if (false === chdir(dirname(__FILE__))) {
@@ -47,30 +53,36 @@ if (is_threshold_same_as_cache()) {
     print_error('* Already tooted' . $json_cached, DO_EXIT);
 }
 
+/* [Main] ================================================================== */
+
 /**
  * Build content to POST.
+ * ----------------------
+ * POST するトゥート内容を作成
  */
 
 // テンプレートの文字列置き換えの一覧読み込み
 require_once('list-replace.inc.php');
 
 // メインのトゥート部取得
-$toot_main    = get_toot_main();
-// CW内（「もっと見る」）の内容取得
+$toot_main = get_toot_main();
+// CW （警告文）の内容取得
 $toot_spoiler = get_toot_spoiler();
 
 // POST するデータの作成
-// 時報トゥートは、警告文欄に時報、隠し本文にその他の情報を記載しているので
-// 逆にセットしています。
 $data_post = [
-    'status'       => $toot_spoiler,
-    'spoiler_text' => $toot_main,
-    'visibility'   => get_visibility(),
+    'status'     => $toot_main,
+    'visibility' => get_visibility(),
 ];
+// CW（警告文）がある場合セット。上記 $toot_main の内容は「もっと見る」に入ります。
+if (! empty($toot_spoiler)) {
+    $data_post['spoiler_text'] = $toot_spoiler;
+}
 $data_post = http_build_query($data_post, "", "&");
 
 /**
  * Build request headers.
+ * ----------------------
  * リクエストのヘッダー作成。
  */
 $access_token     = get_accesstoken();
@@ -90,8 +102,7 @@ $header = implode("\r\n", $header);
  */
 $count_retry  = 0;
 $url_api_toot = get_url_toot();
-$method       = 'POST';
-
+$method  = 'POST';
 $context = [
     'http' => [
         'method'  => $method,
@@ -107,7 +118,7 @@ while (true) {
 
     // トゥートの実行.
     // ヘッダに Idempotency-Key をセットしているので同一 Key の場合は何度トゥートしても
-    // 成功した １つのトゥートのみが有効
+    // 成功した １つのトゥートのみが有効。トゥート済みの場合は 404 エラー。
     $result = file_get_contents($url_api_toot, false, stream_context_create($context));
     // トゥート成功時の処理
     if (false !== $result) {
@@ -133,6 +144,7 @@ if (! save_data($result)) {
 
 print_stdout('- Toot success.');
 print_stdout(file_get_contents('/data/tooted.json'));
+
 exit(SUCCESS);
 
 /* [Functions] ============================================================= */
@@ -213,9 +225,9 @@ function get_path_dir_data()
 
 function get_path_file_data()
 {
-    $path_file_data = get_path_dir_data();
+    $path_dir_data = get_path_dir_data();
 
-    return $path_file_data . DIRECTORY_SEPARATOR . NAME_FILE_DATA;
+    return $path_dir_data . DIRECTORY_SEPARATOR . NAME_FILE_DATA;
 }
 
 function get_path_file_log()
@@ -232,7 +244,7 @@ function get_schema()
 
 function get_threshold_from_time(int $timestamp)
 {
-    if(is_mode_debug()){
+    if (is_mode_debug()) {
         return date('YmdHi', $timestamp);
     }
     return date('YmdH', $timestamp);
@@ -243,15 +255,20 @@ function get_threshold_now()
     return get_threshold_from_time(TIME_NOW);
 }
 
-function get_toot_main(){
+function get_toot_main()
+{
     $template_main = get_envs('MSTDN_TOOT_MAIN') ?: file_get_contents('toot-main.tpl');
     $list_replace  = get_list_replace();
     return replace_str_in_template($template_main, $list_replace);
 }
 
-function get_toot_spoiler(){
+function get_toot_spoiler()
+{
     $template_main = get_envs('MSTDN_TOOT_SPOILER') ?: file_get_contents('toot-main.tpl');
-    $list_replace  = get_list_replace();
+    if ('no_spoiler' === trim($template_main)) {
+        return '';
+    }
+    $list_replace = get_list_replace();
     return replace_str_in_template($template_main, $list_replace);
 }
 
