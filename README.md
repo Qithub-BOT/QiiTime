@@ -1,4 +1,6 @@
-[![](https://Qithub-BOT.github.io/QiiTime/images/LOGO_QiiTime.png)](https://github.com/Qithub-BOT/QiiTime "View QiiTime on GitHub")
+<img src="https://Qithub-BOT.github.io/QiiTime/images/LOGO_QiiTime.png" width="100%" />
+
+[![](https://img.shields.io/docker/cloud/automated/qithubbot/qiitime.svg)](https://hub.docker.com/r/qithubbot/qiitime "View on Docker Hub") [![](https://img.shields.io/docker/cloud/build/qithubbot/qiitime.svg)](https://hub.docker.com/r/qithubbot/qiitime/builds "View Builds on Docker Hub")
 
 # QiiTime
 
@@ -8,8 +10,8 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
 
 - Docker イメージ名: `pull qithubbot/qiitime`
 - リポジトリ
-  - Docker イメージ: https://hub.docker.com/r/qithubbot/qiitime @ Docker Hub
-  - GitHub ソース: https://github.com/Qithub-BOT/QiiTime @ GitHub
+  - イメージ: https://hub.docker.com/r/qithubbot/qiitime @ Docker Hub
+  - ソース: https://github.com/Qithub-BOT/QiiTime @ GitHub
 - 詳細な使い方は以下をご覧ください。
   - USAGE_DETAIL.md （Fork した場合、Qiitadon 以外のインスタンスで使いたい場合、トゥート内容などをカスタムしたい場合やログの確認方法など）
 
