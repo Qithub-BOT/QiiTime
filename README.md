@@ -36,7 +36,7 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
       container_name: qiitime
       image: qithubbot/qiitime:latest
       environment:
-        - MSTDN_ACCESSTOKEN='<YOUR Qiitadon ACCESS TOKEN>'
+        - MSTDN_ACCESSTOKEN='[YOUR Qiitadon ACCESS TOKEN Here]'
         - IS_MODE_DEBUG='false'
       restart: always
 
@@ -63,7 +63,7 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
   docker run --rm \
     --detach \
     --name qiitime \
-    -e MSTDN_ACCESSTOKEN '<YOUR Qiitadon ACCESS TOKEN>' \
+    -e MSTDN_ACCESSTOKEN '[OUR Qiitadon ACCESS TOKEN Here]' \
     -e IS_MODE_DEBUG 'false' \
     qithubbot/qiitime
   ```

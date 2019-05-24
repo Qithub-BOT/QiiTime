@@ -31,13 +31,13 @@ const LEN_ACCESSTOKEN  = 64; //アクセストークンの長さ
 
 /* [PreProcess] ============================================================ */
 
+// デバッグモードの確認用表示
+print_on_debug('- Working on DEBUG Mode');
+
 // 作業ディレクトリをスクリプトに移動
 if (false === chdir(dirname(__FILE__))) {
     print_error('* Fail to change working directory to the script directory.', DO_EXIT);
 }
-
-// デバッグモードの確認用表示
-print_on_debug('- Working on DEBUG Mode');
 
 // 必須の環境変数がセットされているか確認
 if (! is_env_set()) {
