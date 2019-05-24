@@ -8,12 +8,14 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
 
 アクセストークンを指定して起動すると１時間ごとに時報をトゥートします。
 
-- Docker イメージ名: `pull qithubbot/qiitime`
-- リポジトリ
+- Docker イメージ名: `qithubbot/qiitime`
+- リポジトリ:
   - イメージ: https://hub.docker.com/r/qithubbot/qiitime @ Docker Hub
   - ソース: https://github.com/Qithub-BOT/QiiTime @ GitHub
-- 詳細な使い方は以下をご覧ください。
-  - [USAGE_DETAIL.md](https://github.com/Qithub-BOT/QiiTime/blob/master/USAGE_DETAIL.md)<br>（Qiitadon 以外のインスタンスで使いたい場合、トゥート内容などをカスタムしたい場合やログの確認方法など）
+- **詳しい使い方**:
+  - [USAGE_DETAIL.md](https://github.com/Qithub-BOT/QiiTime/blob/master/USAGE_DETAIL.md)<br>Qiitadon 以外のインスタンスで使いたい場合、トゥート内容などをカスタムしたい場合やログの確認方法など。
+- 不具合報告／要望など:
+  - [Issue of QiiTime @ Qithub-ORG](https://github.com/Qithub-BOT/Qithub-ORG/issues?utf8=%E2%9C%93&q=is%3Aissue+qiitime)
 
 ## Usage
 
