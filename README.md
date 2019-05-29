@@ -6,7 +6,7 @@
 
 Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時報トゥート BOT「QiiTime」の Dockerfile です。
 
-アクセストークンを指定して起動すると１時間ごとに時報をトゥートします。
+アクセストークンをコンテナの環境変数に指定して起動すると１時間ごとに時報をトゥートします。
 
 - Docker イメージ名: `qithubbot/qiitime`
 - リポジトリ:
