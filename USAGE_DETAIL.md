@@ -19,21 +19,33 @@
 
 時報アプリに必要な各種設定（アクセス・トークンなど）はコンテナ内の環境変数で制御しています。イメージのビルド時やコンテナ起動時に以下の**環境変数を変更することでアプリの挙動を変えることができます**。
 
-- `MSTDN_ACCESSTOKEN`（必須）
-  - インスタンスで発行したアクセス・トークンです。デフォルトは空に設定されています。
-- `IS_MODE_DEBUG` = `true` `false`（オプション設定）
-  - デバッグ用の詳細な出力をします。`false` 以外に設定された場合、ログはコンテナ内の `/data/log.txt` に出力されます。デフォルトは `false`。
-- `MSTDN_VISIBILITY` = `public` `unlisted` `direct`（オプション設定）
-  - トゥートの公開範囲を指定します。デフォルトは `direct`（ダイレクト）です。
-- `MSTDN_SCHEMA` = 任意の文字列（オプション設定）
-  - Qiitadon 以外のインスタンスを指定する場合に `https` 以外のスキーマを指定します。デフォルトは `https`。
-- `MSTDN_HOST` = 任意の文字列（オプション設定）
-  - Qiitadon 以外のインスタンスを指定する場合に `qiitadon.com` 以外のホストを指定します。デフォルトは `qiitadon.com`。
-- `MSTDN_TOOT_MAIN` = 任意の文字列（オプション設定）
-  - トゥート時の本文に記載する文を指定できます。"`%%DATE_TIME%%`"などの置き換え文字を含めるとテンプレートとして動作します。デフォルトは QiiTime の紹介文です。
+### 必須指定の変数
+
+- `MSTDN_ACCESSTOKEN`
+  - インスタンスで発行したアクセス・トークンです。
+  - デフォルトは空に設定されています。
+
+### オプション指定の変数
+
+- `IS_MODE_DEBUG` = `true` `false`
+  - デバッグ用の詳細な出力をします。`false` 以外に設定された場合、ログはコンテナ内の `/data/log.txt` に出力されます。
+  - デフォルトは `false`。
+- `MSTDN_VISIBILITY` = `public` `unlisted` `direct`
+  - トゥートの公開範囲を指定します。
+  - デフォルトは `direct`（ダイレクト）です。
+- `MSTDN_SCHEMA` = 任意の文字列
+  - Qiitadon 以外のインスタンスを指定する場合に `https` 以外のスキーマを指定します。
+  - デフォルトは `https`。
+- `MSTDN_HOST` = 任意の文字列
+  - Qiitadon 以外のインスタンスを指定する場合に `qiitadon.com` 以外のホストを指定します。
+  - デフォルトは `qiitadon.com`。
+- `MSTDN_TOOT_MAIN` = 任意の文字列
+  - トゥート時の本文に記載する文を指定できます。"`%%DATE_TIME%%`"などの置き換え文字を含めるとテンプレートとして動作します。
+  - デフォルトは QiiTime の紹介文です。
   - [テンプレートとして使える置き換え文字一覧](https://github.com/Qithub-BOT/QiiTime/blob/master/src/list-replace.inc.php)
 - `MSTDN_TOOT_SPOILER`
-  - トゥート時の警告文として表示する文を指定できます。指定されるとトゥートの本文は「もっと見る」として隠し表示になり、逆にこの警告文が表示されるようになります。"`%%DATE_TIME%%`"などの置き換え文字を含めるとテンプレートとして動作します。デフォルトは時報情報です。
+  - トゥート時の警告文として表示する文を指定できます。指定されるとトゥートの本文は「もっと見る」として隠し表示になり、逆にこの警告文が表示されるようになります。"`%%DATE_TIME%%`"などの置き換え文字を含めるとテンプレートとして動作します。
+  - デフォルトは時報情報。
   - 警告文を表示させない（本文のみを表示させたい）場合は `no_spoiler` を指定します。
   - [テンプレートとして使える置き換え文字一覧](https://github.com/Qithub-BOT/QiiTime/blob/master/src/list-replace.inc.php)
 
@@ -47,10 +59,10 @@
 
 ```shellsession
 $ docker run --rm -d \
-  -e MSTDN_SCHEMA=https
-  -e MSTDN_HOST=[YOUR HOST NAME] \
-  -e MSTDN_ACCESSTOKEN=[YOUR HOSTs ACCESS TOKEN] \
-  qithubbot/qiitime
+    -e MSTDN_SCHEMA=https \
+    -e MSTDN_HOST=[YOUR HOST NAME] \
+    -e MSTDN_ACCESSTOKEN=[YOUR HOSTs ACCESS TOKEN] \
+    qithubbot/qiitime
 ```
 
 ## トゥートの公開範囲を変更したい
@@ -59,9 +71,9 @@ $ docker run --rm -d \
 
 ```shellsession
 $ docker run --rm -d \
-  -e MSTDN_VISIBILITY=public
-  -e MSTDN_ACCESSTOKEN=[YOUR HOSTs ACCESS TOKEN] \
-  qithubbot/qiitime
+    -e MSTDN_VISIBILITY=public \
+    -e MSTDN_ACCESSTOKEN=[YOUR HOSTs ACCESS TOKEN] \
+    qithubbot/qiitime
 ```
 
 ## ローカルでビルドしたイメージを使いたい

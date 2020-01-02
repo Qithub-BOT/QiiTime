@@ -23,7 +23,7 @@ Qiita のマストドン・サーバー [Qiitadon](https://qiitadon.com/) の時
 
 - ディレクトリ構成
   ```shellsession
-  $ chdir /path/to/your/repos/QiiTime/
+  $ chdir /path/to/QiiTime/
   $ tree
   .
   └── docker-compose.yml
