@@ -3,6 +3,8 @@
  * QiiTime のフロントエンドです。最後の時報トゥートの ID を JSON 形式で返します.
  */
 
+date_default_timezone_set('Asia/Tokyo');
+
 /* [Settings] ============================================================== */
 
 $path_dir_data  = '/data';
