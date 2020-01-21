@@ -7,6 +7,8 @@
  * - Note: 呼び出された時間をトゥートするので、呼び出すタイミングに注意。
  */
 
+ date_default_timezone_set('Asia/Tokyo');
+
  /* [Constants] ============================================================= */
 
 define('TIME_NOW', time());
